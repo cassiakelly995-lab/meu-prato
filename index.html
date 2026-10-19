@@ -30,6 +30,11 @@ nav button{flex:1;border:0;border-radius:99px;padding:12px 4px;color:var(--mu);b
 .chips{display:flex;flex-wrap:wrap;gap:8px}.chips button{padding:8px 16px;font-size:.95rem}
 .tab{display:none}.tab.on{display:block}
 #gr{display:none}#gr.on{display:block;margin-top:10px}
+.ring{width:170px;height:170px;border-radius:50%;margin:6px auto;display:grid;place-items:center;background:conic-gradient(var(--g) 0%,#e3f0ff 0)}
+.ring>div{width:130px;height:130px;border-radius:50%;background:#fff;display:grid;place-content:center;text-align:center}.ring b{font-size:2.2rem;line-height:1}.ring small{color:var(--mu)}
+.bars{display:flex;gap:6px;align-items:flex-end;height:150px;margin:8px 0}.bars>div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}.bars i{width:100%;border-radius:10px 10px 4px 4px;display:block}.bars b{font-size:.7rem}.bars small{font-size:.65rem;color:var(--mu)}
+pre{white-space:pre-wrap;font:500 .85rem/1.5 system-ui;background:#f7fbff;border-radius:18px;padding:12px}
+@media print{header,nav,.tab:not(#t3),#t3 .card:first-child,#t3 .g2{display:none!important}body{background:#fff}}
 </style>
 </head>
 <body>
@@ -37,14 +42,13 @@ nav button{flex:1;border:0;border-radius:99px;padding:12px 4px;color:var(--mu);b
 <main>
 <section class="tab on" id="t0">
  <div class="card"><h2>🌤️ Hoje</h2>
-  <div class="big" id="kc">0</div><div class="mu" id="meta"></div>
-  <div class="bar"><i id="bar" style="width:0"></i></div>
-  <div id="cores" class="mu"></div><p id="msg"></p></div>
+  <div class="ring" id="ring"><div><b id="kc">0</b><small>kcal</small></div></div><div class="mu" id="meta" style="text-align:center"></div>
+  <div id="cores" class="mu"></div><p id="msg"></p><p id="tip" class="mu"></p><button id="novo">🎉 Experimentei algo novo hoje</button> <span class="mu" id="nvc"></span></div>
  <div class="card"><h2>🍽️ O que eu comi</h2>
   <select id="ref"><option>Café da manhã</option><option>Almoço</option><option>Lanche</option><option>Jantar</option><option>Outro</option></select>
   <input id="busca" placeholder="Buscar alimento (ex.: arroz)" autocomplete="off">
   <select id="alim" size="5"></select>
-  <div class="g2"><input id="qtd" type="number" min="0.25" step="0.25" value="1" aria-label="Quantidade"><button class="f" id="add">Adicionar</button></div>
+  <div class="g2"><input id="qtd" type="number" min="0.25" step="0.25" value="1" aria-label="Quantidade"><button class="f" id="add">Adicionar</button></div><button id="star">⭐ Guardar como alimento seguro</button>
   <p class="mu">Quantidade: 1 = uma porção do que aparece na lista.</p>
   <details><summary>Não achou? Criar alimento</summary>
    <input id="cn" placeholder="Nome"><div class="g2"><input id="ck" type="number" placeholder="Calorias"><select id="cc"><option value="v">🟢 Leve</option><option value="a">🟡 Moderado</option><option value="m">🔴 Pesado</option></select></div>
@@ -70,13 +74,14 @@ nav button{flex:1;border:0;border-radius:99px;padding:12px 4px;color:var(--mu);b
   <button class="f" id="ps">Salvar perfil</button>
   <p class="mu">A meta de calorias é uma estimativa para perder peso aos poucos. Confirme com seu médico ou nutricionista.</p></div>
  <div class="card"><h2>📅 Dias anteriores</h2><div id="hist"></div></div>
- <div class="card"><h2>📲 Instalar no celular</h2><p class="mu">Toque no botão 📲 Instalar no topo. Se ele não aparecer, use o menu ⋮ do Chrome e escolha "Instalar app" ou "Adicionar à tela inicial".</p></div><div class="card"><h2>🎨 Sobre as cores</h2><p class="mu">🟢 leve, 🟡 moderado, 🔴 pesado (frituras, açúcar, ultraprocessados). É uma ajuda geral, não substitui orientação de profissional. Sem culpa: o objetivo é trocar aos poucos, no seu ritmo.</p></div>
+ <div class="card"><h2>⏰ Lembretes</h2><label><input type="checkbox" id="rmon" style="width:auto"> Ativar lembretes</label><select id="rmag"><option value="60">Água a cada 1 hora</option><option value="90">Água a cada 1h30</option><option value="120">Água a cada 2 horas</option></select><p class="mu">Horários das refeições:</p><div class="g2"><input type="time" id="rm0"><input type="time" id="rm1"></div><input type="time" id="rm2"><p class="mu">Os avisos só funcionam com o app aberto. Para ter certeza, crie também alarmes no relógio do celular.</p></div><div class="card"><h2>📲 Instalar no celular</h2><p class="mu">Toque no botão 📲 Instalar no topo. Se ele não aparecer, use o menu ⋮ do Chrome e escolha "Instalar app" ou "Adicionar à tela inicial".</p></div><div class="card"><h2>🎨 Sobre as cores</h2><p class="mu">🟢 leve, 🟡 moderado, 🔴 pesado (frituras, açúcar, ultraprocessados). É uma ajuda geral, não substitui orientação de profissional. Sem culpa: o objetivo é trocar aos poucos, no seu ritmo.</p></div>
 </section>
+<section class="tab" id="t3"><div class="card"><h2>📊 Últimos 7 dias</h2><p class="mu">Calorias por dia</p><div class="bars" id="bk"></div><p class="mu">Copos de água por dia</p><div class="bars" id="bw"></div></div><div class="card"><h2>🩺 Relatório para o médico</h2><pre id="rpt"></pre><div class="g2"><button class="f" id="rcopy">Copiar</button><button id="rprint">Imprimir / PDF</button></div></div></section>
 </main>
-<nav><button class="on" data-t="0">🍽️ Hoje</button><button data-t="1">⚖️ Peso</button><button data-t="2">👤 Perfil</button></nav>
+<nav><button class="on" data-t="0">🍽️ Hoje</button><button data-t="1">⚖️ Peso</button><button data-t="3">📊 Relatório</button><button data-t="2">👤 Perfil</button></nav>
 <script>
 const $=i=>document.getElementById(i);
-const BASE=[["Água 1 copo",0,"v"],["Café sem açúcar 1 xícara",5,"v"],["Pão francês 1 un",135,"a"],["Pão integral 1 fatia",70,"v"],["Ovo cozido 1 un",75,"v"],["Ovo frito 1 un",110,"a"],["Arroz branco 4 colheres",130,"a"],["Arroz integral 4 colheres",110,"v"],["Feijão 1 concha",75,"v"],["Macarrão cozido 1 prato",220,"a"],["Frango grelhado 100g",165,"v"],["Frango empanado/frito 100g",260,"m"],["Carne grelhada 100g",220,"a"],["Hambúrguer de lanchonete 1 un",480,"m"],["Batata frita porção média",350,"m"],["Batata cozida 100g",85,"v"],["Mandioca cozida 100g",125,"v"],["Cuscuz 1 fatia",120,"v"],["Tapioca 1 un",130,"a"],["Pizza 1 fatia",280,"m"],["Nuggets 5 un",240,"m"],["Salsicha 1 un",150,"m"],["Banana 1 un",90,"v"],["Maçã 1 un",70,"v"],["Pipoca sem manteiga 1 xícara",30,"v"],["Iogurte natural 170g",100,"v"],["Leite 200ml",120,"a"],["Queijo mussarela 1 fatia",70,"a"],["Bolacha água e sal 5 un",60,"a"],["Bolacha recheada 3 un",150,"m"],["Suco natural sem açúcar 200ml",90,"a"],["Refrigerante 350ml",140,"m"],["Chocolate 25g",130,"m"],["Sorvete 1 bola",130,"m"]];
+const BASE="Água 1 copo|0|v;Café sem açúcar 1 xícara|5|v;Café com leite e açúcar 1 xícara|90|a|diminuir o açúcar aos poucos;Chá sem açúcar 1 xícara|2|v;Leite integral 200ml|120|a;Leite desnatado 200ml|70|v;Iogurte natural 170g|100|v;Iogurte de fruta 170g|150|a|iogurte natural com um pedaço da mesma fruta;Vitamina de banana com leite 300ml|220|a;Suco natural sem açúcar 200ml|90|a;Suco de caixinha 200ml|110|m|suco natural ou água de coco;Água de coco 200ml|40|v;Refrigerante 350ml|140|m|água com gás e gotas de limão, que também faz bolinhas;Refrigerante zero 350ml|2|a;Pão francês 1 un|135|a|pão integral em fatia;Pão de forma 1 fatia|65|a;Pão integral 1 fatia|70|v;Pão com manteiga 1 un|190|a;Pão de queijo 1 un|90|a;Tapioca 1 un|130|a;Cuscuz 1 fatia|120|v;Bolo simples 1 fatia|250|m|uma fatia menor de bolo caseiro;Biscoito água e sal 5 un|60|a;Biscoito recheado 3 un|150|m|biscoito água e sal com doce de fruta;Torrada 2 un|60|a;Cereal matinal 1 xícara|120|a;Aveia 3 colheres|90|v;Granola 2 colheres|100|a;Ovo cozido 1 un|75|v;Ovo frito 1 un|110|a|ovo mexido com pouco óleo;Omelete 2 ovos|190|a;Queijo mussarela 1 fatia|70|a;Queijo minas 1 fatia|60|v;Requeijão 1 colher|50|a;Presunto 1 fatia|30|a;Arroz branco 4 colheres|130|a;Arroz integral 4 colheres|110|v;Macarrão cozido 1 prato|220|a;Macarrão instantâneo 1 pacote|380|m|macarrão comum com molho simples;Batata cozida 100g|85|v;Batata frita porção média|350|m|batata assada no forno, que fica crocante;Purê de batata 4 colheres|120|a;Mandioca cozida 100g|125|v;Farofa 2 colheres|110|a;Polenta 1 fatia|100|v;Feijão 1 concha|75|v;Lentilha 1 concha|70|v;Frango grelhado 100g|165|v;Frango empanado ou frito 100g|260|m|frango assado no forno com a mesma crocância;Nuggets 5 un|240|m|nuggets assados no forno;Carne bovina grelhada 100g|220|a;Carne moída 4 colheres|150|a;Bife acebolado 100g|200|a;Linguiça 1 un|250|m;Salsicha 1 un|150|m;Peixe grelhado 100g|140|v;Sardinha em lata 1 un|120|v;Atum em lata 1 colher|60|v;Hambúrguer de lanchonete 1 un|480|m|hambúrguer caseiro no prato;Pizza 1 fatia|280|m;Coxinha 1 un|280|m|coxinha assada;Pastel 1 un|290|m|pastel assado;Esfiha assada 1 un|180|a;Lasanha 1 porção|300|a;Strogonoff 4 colheres|190|a;Banana 1 un|90|v;Maçã 1 un|70|v;Laranja 1 un|60|v;Mamão 1 fatia|60|v;Melancia 1 fatia|50|v;Uva 1 cacho pequeno|70|v;Abacate 2 colheres|90|a;Tomate 3 fatias|15|v;Alface 1 prato|10|v;Cenoura cozida 3 colheres|25|v;Brócolis cozido 3 colheres|20|v;Salada de legumes 1 prato|50|v;Pipoca sem manteiga 1 xícara|30|v;Castanhas 5 un|60|a;Amendoim 1 punhado|160|a;Chocolate 25g|130|m;Bombom 1 un|50|m;Sorvete 1 bola|130|m;Brigadeiro 1 un|80|m;Gelatina 1 pote|60|v;Doce de leite 1 colher|60|m;Mel 1 colher|60|a;Açúcar 1 colher|20|m".split(";").map(s=>{const a=s.split("|");return [a[0],+a[1],a[2],a[3]||""]});
 const K='meuprato_v1';
 let S=JSON.parse(localStorage.getItem(K)||'null')||{p:{},w:[],log:{},fav:[],cus:[],ag:{}};
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
@@ -85,16 +90,16 @@ const foods=()=>[...S.cus.map(x=>[x[0],x[1],x[2]]),...BASE];
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function meta(){const p=S.p;if(!p.alt||!p.pes||!p.ida)return 0;const b=10*p.pes+6.25*p.alt-5*p.ida+(p.sex==='m'?5:-161);return Math.round(Math.max(b,b*1.2-400))}
 function opts(){const q=$('busca').value.toLowerCase().trim(),a=$('alim');a.textContent='';foods().filter(f=>f[0].toLowerCase().includes(q)).forEach(f=>{const o=new Option((f[2]==='v'?'🟢 ':f[2]==='a'?'🟡 ':'🔴 ')+f[0]+' · '+f[1]+' kcal',f[0]);a.add(o)});if(a.options.length)a.selectedIndex=0}
-function addItem(n){const f=foods().find(x=>x[0]===n);if(!f)return;const q=parseFloat($('qtd').value)||1,d=hoje();(S.log[d]=S.log[d]||[]).push({id:Date.now()+Math.random(),m:$('ref').value,n:f[0],k:Math.round(f[1]*q),c:f[2],q});save();render()}
+function addItem(n){const f=foods().find(x=>x[0]===n);if(!f)return;const q=parseFloat($('qtd').value)||1,d=hoje();(S.log[d]=S.log[d]||[]).push({id:Date.now()+Math.random(),m:$('ref').value,n:f[0],k:Math.round(f[1]*q),c:f[2],q});$('tip').textContent=f[3]?'💡 Se um dia quiser (sem obrigação): '+f[3]+'.':'';save();render()}
 function render(){
  const d=hoje(),L=S.log[d]||[],tot=L.reduce((a,x)=>a+x.k,0),m=meta(),cnt={v:0,a:0,m:0};L.forEach(x=>cnt[x.c]+=x.k);
- $('kc').textContent=tot+' kcal';$('meta').textContent=m?'Meta do dia: '+m+' kcal':'Preencha o Perfil para ver sua meta';
- const pc=m?Math.min(100,tot/m*100):0;$('bar').style.width=pc+'%';$('bar').style.background=pc>100||tot>m?'var(--r)':pc>85?'var(--y)':'var(--g)';
+ $('kc').textContent=tot;$('meta').textContent=m?'Meta do dia: '+m+' kcal':'Preencha o Perfil para ver sua meta';
+ const pc=m?Math.min(100,tot/m*100):0;$('ring').style.background='conic-gradient('+(m&&tot>m?'var(--r)':pc>85?'var(--y)':'var(--g)')+' '+pc+'%,#e3f0ff 0)';
  $('cores').textContent='🟢 '+cnt.v+'  🟡 '+cnt.a+'  🔴 '+cnt.m+' kcal';
  let msg='Registre sua primeira refeição quando quiser 🌱';if(tot){msg=cnt.m/tot>.4?'Hoje teve bastante coisa pesada. Sem culpa: amanhã troque só um item por um 🟡.':m&&tot>m?'Passou um pouco da meta. Tudo bem, amanhã é outro dia.':'Bom registro! Continue no seu ritmo 💙'}$('msg').textContent=msg;
  const l=$('lista');l.textContent='';if(!L.length)l.innerHTML='<p class="mu">Nada registrado ainda.</p>';
  L.forEach(x=>{const r=document.createElement('div');r.className='it';r.innerHTML='<i class="dot '+x.c+'"></i>'+(x.p?'<img src="'+x.p+'" alt="Foto" style="width:64px;height:64px;object-fit:cover;border-radius:16px">':'')+'<span>'+esc(x.n)+(x.q!==1?' ×'+x.q:'')+'<br><small class="mu">'+esc(x.m)+' · '+x.k+' kcal</small></span>';const b=document.createElement('button');b.className='sm del';b.textContent='Apagar';b.setAttribute('aria-label','Apagar '+x.n);b.onclick=()=>{S.log[d]=S.log[d].filter(y=>y.id!==x.id);save();render()};r.append(b);l.append(r)});
- const fv=$('favs');fv.textContent='';if(!S.fav.length)fv.innerHTML='<span class="mu">Na lista de alimentos, toque 2 vezes rápido em um item para guardar aqui. Segure o dedo no botão para remover.</span>';
+ const fv=$('favs');fv.textContent='';if(!S.fav.length)fv.innerHTML='<span class="mu">Escolha um alimento na lista e toque em ⭐ Guardar. Segure o dedo no botão para remover.</span>';
  S.fav.forEach(n=>{const b=document.createElement('button');b.textContent=n.split(' ')[0]+(n.split(' ')[1]&&n.split(' ')[1].length>2&&n.split(' ').length<3?' '+n.split(' ')[1]:'');b.title=n;b.onclick=()=>addItem(n);b.oncontextmenu=e=>{e.preventDefault();S.fav=S.fav.filter(y=>y!==n);save();render()};fv.append(b)});
  $('ag').textContent=(S.ag[d]||0)+' copos';const pw=(S.w.length?S.w[S.w.length-1].v:S.p.pes)||0,mc=pw?Math.max(1,Math.round(pw*35/200)):0,ac=S.ag[d]||0;$('amt').textContent=mc?'Meta: cerca de '+(mc*0.2).toFixed(1).replace('.',',')+' L por dia ('+mc+' copos de 200 ml). Você bebeu '+ac+'. Confirme com seu médico.':'Preencha seu peso no Perfil para ver a meta de água.';$('abar').style.width=mc?Math.min(100,ac/mc*100)+'%':'0';
  const p=S.p;['alt','pes','ida','sex'].forEach(k=>{if(p[k]!==undefined)$(k).value=p[k]});
@@ -115,9 +120,35 @@ $('padd').onclick=()=>{const v=parseFloat($('pv').value);if(!v)return;S.w=S.w.fi
 $('ps').onclick=()=>{S.p={alt:+$('alt').value,pes:+$('pes').value,ida:+$('ida').value,sex:$('sex').value};save();render();document.querySelector('[data-t="0"]').click()};
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',i==b.dataset.t))});
 let dp;addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;$('inst').hidden=false});$('inst').onclick=async()=>{if(!dp)return;dp.prompt();await dp.userChoice;dp=null;$('inst').hidden=true};
+
 let foto='';
 $('fo').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const s=Math.min(1,360/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);foto=c.toDataURL('image/jpeg',.6);URL.revokeObjectURL(u)};im.src=u};
 $('fadd').onclick=()=>{const k=parseInt($('fk').value);if(!foto&&!$('fn').value.trim())return;const d=hoje();(S.log[d]=S.log[d]||[]).push({id:Date.now()+Math.random(),m:$('ref').value,n:$('fn').value.trim()||'Refeição com foto',k:isNaN(k)?0:k,c:$('fc').value,q:1,p:foto});save();foto='';$('fo').value='';$('fn').value='';$('fk').value='';render()};
+
+$('star').onclick=()=>{const n=$('alim').value;if(n&&!S.fav.includes(n)){S.fav.push(n);save();render()}};
+$('novo').onclick=()=>{S.nv=S.nv||{};S.nv[hoje()]=(S.nv[hoje()]||0)+1;save();render()};
+const dias=n=>{const a=[];for(let i=n-1;i>=0;i--){const x=new Date();x.setDate(x.getDate()-i);a.push(x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0'))}return a};
+const kd=d=>(S.log[d]||[]).reduce((a,x)=>a+x.k,0);
+const barsH=(v,l,mx,c)=>v.map((x,i)=>'<div><i style="height:'+Math.max(4,mx?x/mx*100:4)+'px;background:'+c+'"></i><b>'+x+'</b><small>'+l[i]+'</small></div>').join('');
+function drawRep(){const D=dias(7),lab=D.map(d=>d.slice(8)+'/'+d.slice(5,7)),K7=D.map(kd),W7=D.map(d=>S.ag[d]||0);
+ $('bk').innerHTML=barsH(K7,lab,Math.max(...K7,1),'#5bbf8f');$('bw').innerHTML=barsH(W7,lab,Math.max(...W7,1),'#4aa3e8');
+ const reg=D.filter(d=>kd(d)>0),med=reg.length?Math.round(reg.reduce((a,d)=>a+kd(d),0)/reg.length):0,wm=Math.round(W7.reduce((a,b)=>a+b,0)/7*10)/10;
+ const c={v:0,a:0,m:0};D.forEach(d=>(S.log[d]||[]).forEach(x=>c[x.c]+=x.k));const tc=c.v+c.a+c.m,pp=k=>tc?Math.round(c[k]/tc*100):0;
+ const w=S.w,p=S.p,pa=w.length?w[w.length-1].v:p.pes,pi=w.length?w[0].v:p.pes,im=p.alt&&pa?(pa/Math.pow(p.alt/100,2)).toFixed(1):'-',mc=pa?Math.round(pa*35/200):0,nv=D.reduce((a,d)=>a+((S.nv||{})[d]||0),0);
+ $('nvc').textContent=(S.nv&&S.nv[hoje()])?'🎉 x'+S.nv[hoje()]+' hoje':'';
+ $('rpt').textContent=['RELATÓRIO MEU PRATO — últimos 7 dias','Gerado em '+new Date().toLocaleDateString('pt-BR'),'','Peso atual: '+(pa||'-')+' kg (primeiro registro: '+(pi||'-')+' kg)','IMC: '+im,'Meta de calorias: '+(meta()||'-')+' kcal/dia','Média de calorias (dias com registro): '+med+' kcal em '+reg.length+' dia(s)','Origem das calorias: 🟢 '+pp('v')+'%  🟡 '+pp('a')+'%  🔴 '+pp('m')+'%','Água: média de '+wm+' copos/dia (meta: '+(mc||'-')+' copos de 200 ml)','Alimentos novos experimentados: '+nv,'','Calorias por dia:'].concat(D.map((d,i)=>d.split('-').reverse().join('/')+': '+K7[i]+' kcal')).concat(['','Dados informados pela própria pessoa; não substituem avaliação profissional.']).join('\n')}
+const _r=render;render=function(){_r();drawRep()};
+$('rcopy').onclick=async()=>{try{await navigator.clipboard.writeText($('rpt').textContent);$('rcopy').textContent='Copiado ✓'}catch(e){}};
+$('rprint').onclick=()=>window.print();
+S.rm=S.rm||{on:false,ag:90,r:['08:00','12:30','19:00']};
+function rmUI(){$('rmon').checked=S.rm.on;$('rmag').value=S.rm.ag;S.rm.r.forEach((t,i)=>$('rm'+i).value=t)}
+function rmSave(){S.rm={on:$('rmon').checked,ag:+$('rmag').value,r:[0,1,2].map(i=>$('rm'+i).value)};save();if(S.rm.on&&window.Notification&&Notification.permission==='default')Notification.requestPermission()}
+['rmon','rmag','rm0','rm1','rm2'].forEach(i=>$(i).onchange=rmSave);rmUI();
+const fired={};
+const note=t=>{try{if(window.Notification&&Notification.permission==='granted')new Notification('Meu Prato 🍔',{body:t})}catch(e){}};
+setInterval(()=>{if(!S.rm.on)return;const n=new Date(),hm=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'),k=hoje()+hm;if(fired[k])return;
+ if(S.rm.r.includes(hm)){fired[k]=1;note('Hora de comer algo e registrar 🍽️ Sem pressa, no seu ritmo.')}
+ else{const m=n.getHours()*60+n.getMinutes();if(m>=480&&m<=1200&&(m-480)%S.rm.ag===0){fired[k]=1;note('Hora de um copinho de água 💧')}}},20000);
 opts();render();
 if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
