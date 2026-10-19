@@ -106,8 +106,8 @@ function render(){
  let msg='Registre sua primeira refeição quando quiser 🌱';if(tot){msg=cnt.m/tot>.4?'Hoje teve bastante coisa pesada. Sem culpa: amanhã troque só um item por um 🟡.':m&&tot>m?'Passou um pouco da meta. Tudo bem, amanhã é outro dia.':'Bom registro! Continue no seu ritmo 💙'}$('msg').textContent=msg;
  const l=$('lista');l.textContent='';if(!L.length)l.innerHTML='<p class="mu">Nada registrado ainda.</p>';
  L.forEach(x=>{const r=document.createElement('div');r.className='it';r.innerHTML='<i class="dot '+x.c+'"></i>'+(x.p?'<img src="'+x.p+'" alt="Foto" style="width:64px;height:64px;object-fit:cover;border-radius:16px">':'')+'<span>'+esc(x.n)+(x.q!==1?' ×'+x.q:'')+'<br><small class="mu">'+esc(x.m)+' · '+x.k+' kcal</small></span>';const b=document.createElement('button');b.className='sm del';b.textContent='Apagar';b.setAttribute('aria-label','Apagar '+x.n);b.onclick=()=>{S.log[d]=S.log[d].filter(y=>y.id!==x.id);save();render()};r.append(b);l.append(r)});
- const fv=$('favs');fv.textContent='';if(!S.fav.length)fv.innerHTML='<span class="mu">Escolha um alimento na lista e toque em ⭐ Guardar. Segure o dedo no botão para remover.</span>';
- S.fav.forEach(n=>{const b=document.createElement('button');b.textContent=n.split(' ')[0]+(n.split(' ')[1]&&n.split(' ')[1].length>2&&n.split(' ').length<3?' '+n.split(' ')[1]:'');b.title=n;b.onclick=()=>addItem(n);b.oncontextmenu=e=>{e.preventDefault();S.fav=S.fav.filter(y=>y!==n);save();render()};fv.append(b)});
+ const fv=$('favs');fv.textContent='';if(!S.fav.length)fv.innerHTML='<span class="mu">Escolha um alimento na lista e toque em ⭐ Guardar.</span>';
+ S.fav.forEach(n=>{const b=document.createElement('button');b.textContent=n;b.title=n;b.onclick=()=>addItem(n);fv.append(b)});
  $('ag').textContent=(S.ag[d]||0)+' copos';const pw=(S.w.length?S.w[S.w.length-1].v:S.p.pes)||0,mc=pw?Math.max(1,Math.round(pw*35/200)):0,ac=S.ag[d]||0;$('amt').textContent=mc?'Meta: cerca de '+(mc*0.2).toFixed(1).replace('.',',')+' L por dia ('+mc+' copos de 200 ml). Você bebeu '+ac+'. Confirme com seu médico.':'Preencha seu peso no Perfil para ver a meta de água.';$('abar').style.width=mc?Math.min(100,ac/mc*100)+'%':'0';
  const p=S.p;['alt','pes','ida','sex'].forEach(k=>{if(p[k]!==undefined)$(k).value=p[k]});
  const w=S.w,pe=w.length?w[w.length-1].v:p.pes;
@@ -180,6 +180,70 @@ $('scan').onclick=async()=>{if(!('BarcodeDetector'in window)){$('pr').innerHTML=
   const det=new BarcodeDetector({formats:['ean_13','ean_8','upc_a']});
   tm=setInterval(async()=>{try{const c=await det.detect(v);if(c.length){$('pq').value=c[0].rawValue;parar();$('psb').click()}}catch(e){}},500)}
  catch(e){$('pr').innerHTML='<p class="mu">Não consegui abrir a câmera. Digite o código.</p>'}};
+
+/* ===== Melhorias v2 ===== */
+
+// Atualiza quando o dia vira (app aberto ou voltando ao foco)
+let _dia=hoje();
+const checaDia=()=>{if(hoje()!==_dia){_dia=hoje();render()}};
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)checaDia()});
+setInterval(checaDia,60000);
+
+// Favoritos com nome completo e modo Editar (✕ para remover)
+let editFav=false;
+function favsUI(){
+ const fv=$('favs');fv.textContent='';
+ if(!S.fav.length)fv.innerHTML='<span class="mu">Escolha um alimento na lista e toque em ⭐ Guardar.</span>';
+ S.fav.forEach(n=>{
+  const b=document.createElement('button');
+  b.textContent=editFav?'✕ '+n:n;
+  b.onclick=()=>{if(editFav){S.fav=S.fav.filter(y=>y!==n);save();render()}else addItem(n)};
+  fv.append(b)});
+ if(S.fav.length){
+  const e=document.createElement('button');e.className='sm del';
+  e.textContent=editFav?'Pronto':'✏️ Editar';
+  e.onclick=()=>{editFav=!editFav;favsUI()};fv.append(e)}
+}
+
+// Recentes + repetir refeição de ontem
+(function(){
+ const w=document.createElement('div');
+ w.innerHTML='<h2 style="margin-top:18px">🕒 Recentes</h2><div class="chips" id="rec"></div><button id="rep" style="margin-top:12px">↩️ Repetir ontem (refeição escolhida acima)</button>';
+ $('favs').parentElement.append(w);
+ $('rep').onclick=()=>{
+  const y=dias(2)[0],m=$('ref').value,d=hoje();
+  const it=(S.log[y]||[]).filter(x=>x.m===m&&!x.p);
+  if(!it.length){alert('Ontem não teve registro em "'+m+'".');return}
+  (S.log[d]=S.log[d]||[]).push(...it.map(x=>({...x,id:Date.now()+Math.random()})));
+  save();render()};
+})();
+function recUI(){
+ const R=$('rec');R.textContent='';const vistos=[],F=foods();
+ Object.keys(S.log).sort().reverse().forEach(d=>S.log[d].slice().reverse().forEach(x=>{
+  if(!x.p&&!vistos.includes(x.n)&&F.some(f=>f[0]===x.n))vistos.push(x.n)}));
+ if(!vistos.length)R.innerHTML='<span class="mu">Os alimentos que você registrar aparecem aqui.</span>';
+ vistos.slice(0,8).forEach(n=>{const b=document.createElement('button');b.textContent=n;b.onclick=()=>addItem(n);R.append(b)});
+ $('rep').hidden=!(S.log[dias(2)[0]]||[]).length;
+}
+const _r2=render;
+render=function(){_r2();favsUI();recUI()};
+
+// Backup: exportar e importar
+(function(){
+ const c=document.createElement('div');c.className='card';
+ c.innerHTML='<h2>💾 Backup</h2><p class="mu">Salve uma cópia dos seus dados. Se o navegador limpar a memória, você restaura por aqui.</p><div class="g2"><button class="f" id="bx">Exportar</button><button id="bi">Importar</button></div><input type="file" id="bf" accept="application/json" hidden>';
+ $('t2').append(c);
+ $('bx').onclick=()=>{const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));
+  a.download='meu-prato-'+hoje()+'.json';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+ $('bi').onclick=()=>$('bf').click();
+ $('bf').onchange=e=>{const f=e.target.files[0];if(!f)return;
+  f.text().then(t=>{try{const j=JSON.parse(t);
+   if(!j||typeof j!=='object'||!j.log||!j.p)throw 0;
+   if(!confirm('Isso substitui os dados atuais do app. Continuar?'))return;
+   S=j;save();location.reload()}catch(_){alert('Arquivo inválido.')}})};
+})();
 
 opts();render();
 if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
