@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Meu Prato</title>
+<meta name="theme-color" content="#cfe6ff">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icone.png">
+<link rel="apple-touch-icon" href="icone.png">
+<style>
+:root{--bg:#eef6ff;--sf:#fff;--tx:#24324a;--mu:#5f6f8a;--rd:#3b78c4;--bd:#d6e8fb;--g:#5bbf8f;--y:#f6c25b;--r:#f08a8a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:500 18px/1.65 system-ui,Verdana,sans-serif;letter-spacing:.02em;padding:0 0 96px}
+header{background:linear-gradient(#cfe6ff,#e3f0ff);padding:calc(14px + env(safe-area-inset-top,0)) 18px 18px;display:flex;align-items:center;gap:12px;border-radius:0 0 32px 32px;flex-wrap:wrap}
+header img{width:56px;height:56px;border-radius:18px;border:3px solid #fff;box-shadow:0 3px 8px rgba(59,120,196,.25)}header b{font-size:1.45rem;flex:1}
+main{max-width:640px;margin:0 auto;padding:18px}
+.card{background:var(--sf);border:3px solid var(--bd);border-radius:30px;padding:20px;margin-bottom:18px;box-shadow:0 4px 0 var(--bd)}
+h2{margin:0 0 10px;font-size:1.2rem}
+input,select{width:100%;font:inherit;padding:13px 16px;border:3px solid var(--bd);border-radius:22px;background:#f7fbff;color:var(--tx);margin:5px 0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{font:inherit;font-weight:700;border:3px solid var(--rd);background:#fff;color:var(--rd);border-radius:99px;padding:12px 18px;cursor:pointer}
+button.f{background:var(--rd);color:#fff}button.sm{padding:6px 14px;font-size:.9rem}
+.del{border-color:var(--bd);color:var(--mu)}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:3px solid var(--bd);border-radius:28px 28px 0 0;display:flex;padding:4px 8px env(safe-area-inset-bottom,0)}
+nav button{flex:1;border:0;border-radius:99px;padding:12px 4px;color:var(--mu);background:none;margin:4px}nav button.on{color:var(--rd);background:#e3f0ff}
+.bar{height:20px;background:#e3f0ff;border-radius:99px;overflow:hidden;margin:10px 0}.bar i{display:block;height:100%;background:var(--g);border-radius:99px}
+.big{font-size:2rem;font-weight:800}.mu{color:var(--mu);font-size:.92rem}
+.it{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:2px dotted var(--bd)}.it:first-of-type{border-top:0}.it span{flex:1}
+.dot{width:16px;height:16px;border-radius:50%;flex:none}.v{background:var(--g)}.a{background:var(--y)}.m{background:var(--r)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chips button{padding:8px 16px;font-size:.95rem}
+.tab{display:none}.tab.on{display:block}
+#gr{display:none}#gr.on{display:block;margin-top:10px}
+</style>
+</head>
+<body>
+<header><img src="icone.png" alt="" onerror="this.outerHTML='<span style=font-size:44px>🍔</span>'"><b>Meu Prato 🍔</b><button class="f sm" id="inst" hidden>📲 Instalar</button></header>
+<main>
+<section class="tab on" id="t0">
+ <div class="card"><h2>🌤️ Hoje</h2>
+  <div class="big" id="kc">0</div><div class="mu" id="meta"></div>
+  <div class="bar"><i id="bar" style="width:0"></i></div>
+  <div id="cores" class="mu"></div><p id="msg"></p></div>
+ <div class="card"><h2>🍽️ O que eu comi</h2>
+  <select id="ref"><option>Café da manhã</option><option>Almoço</option><option>Lanche</option><option>Jantar</option><option>Outro</option></select>
+  <input id="busca" placeholder="Buscar alimento (ex.: arroz)" autocomplete="off">
+  <select id="alim" size="5"></select>
+  <div class="g2"><input id="qtd" type="number" min="0.25" step="0.25" value="1" aria-label="Quantidade"><button class="f" id="add">Adicionar</button></div>
+  <p class="mu">Quantidade: 1 = uma porção do que aparece na lista.</p>
+  <details><summary>Não achou? Criar alimento</summary>
+   <input id="cn" placeholder="Nome"><div class="g2"><input id="ck" type="number" placeholder="Calorias"><select id="cc"><option value="v">🟢 Leve</option><option value="a">🟡 Moderado</option><option value="m">🔴 Pesado</option></select></div>
+   <button id="cadd">Salvar alimento</button></details></div>
+ <div class="card"><h2>📸 Foto da refeição</h2>
+  <input id="fo" type="file" accept="image/*" capture="environment">
+  <input id="fn" placeholder="O que é? (ex.: prato de arroz e frango)">
+  <div class="g2"><input id="fk" type="number" placeholder="Calorias (estimadas)"><select id="fc"><option value="v">🟢 Leve</option><option value="a" selected>🟡 Moderado</option><option value="m">🔴 Pesado</option></select></div>
+  <button class="f" id="fadd">Salvar foto no dia</button>
+  <p class="mu">O app guarda a foto no seu celular e soma as calorias que você informar. Ele não reconhece comida sozinho. Se quiser uma estimativa, mande a foto para o Claude e ele ajuda a estimar.</p></div>
+ <div class="card"><h2>Meus alimentos seguros ⭐</h2><p class="mu">Toque para adicionar rápido.</p><div class="chips" id="favs"></div></div>
+ <div class="card"><h2>📝 Refeições de hoje</h2><div id="lista"></div></div>
+ <div class="card"><h2>Água 💧</h2><div class="mu" id="amt"></div><div class="bar"><i id="abar" style="width:0;background:#4aa3e8"></i></div><div class="g2"><div class="big" id="ag">0</div><div class="g2"><button id="a1">+ copo</button><button id="a0" class="del">− copo</button></div></div></div>
+</section>
+<section class="tab" id="t1">
+ <div class="card"><h2>⚖️ Peso e IMC</h2><div class="big" id="imc">–</div><div id="imct" class="mu"></div></div>
+ <div class="card"><h2>✏️ Registrar peso</h2><div class="g2"><input id="pv" type="number" step="0.1" placeholder="kg"><button class="f" id="padd">Salvar</button></div>
+  <svg id="gr" viewBox="0 0 300 120" width="100%" height="140" role="img" aria-label="Gráfico de peso"></svg><div id="pl"></div></div>
+</section>
+<section class="tab" id="t2">
+ <div class="card"><h2>🧸 Meu perfil</h2>
+  <div class="g2"><input id="alt" type="number" placeholder="Altura (cm)"><input id="pes" type="number" step="0.1" placeholder="Peso (kg)"><input id="ida" type="number" placeholder="Idade"><select id="sex"><option value="f">Feminino</option><option value="m">Masculino</option></select></div>
+  <button class="f" id="ps">Salvar perfil</button>
+  <p class="mu">A meta de calorias é uma estimativa para perder peso aos poucos. Confirme com seu médico ou nutricionista.</p></div>
+ <div class="card"><h2>📅 Dias anteriores</h2><div id="hist"></div></div>
+ <div class="card"><h2>📲 Instalar no celular</h2><p class="mu">Toque no botão 📲 Instalar no topo. Se ele não aparecer, use o menu ⋮ do Chrome e escolha "Instalar app" ou "Adicionar à tela inicial".</p></div><div class="card"><h2>🎨 Sobre as cores</h2><p class="mu">🟢 leve, 🟡 moderado, 🔴 pesado (frituras, açúcar, ultraprocessados). É uma ajuda geral, não substitui orientação de profissional. Sem culpa: o objetivo é trocar aos poucos, no seu ritmo.</p></div>
+</section>
+</main>
+<nav><button class="on" data-t="0">🍽️ Hoje</button><button data-t="1">⚖️ Peso</button><button data-t="2">👤 Perfil</button></nav>
+<script>
+const $=i=>document.getElementById(i);
+const BASE=[["Água 1 copo",0,"v"],["Café sem açúcar 1 xícara",5,"v"],["Pão francês 1 un",135,"a"],["Pão integral 1 fatia",70,"v"],["Ovo cozido 1 un",75,"v"],["Ovo frito 1 un",110,"a"],["Arroz branco 4 colheres",130,"a"],["Arroz integral 4 colheres",110,"v"],["Feijão 1 concha",75,"v"],["Macarrão cozido 1 prato",220,"a"],["Frango grelhado 100g",165,"v"],["Frango empanado/frito 100g",260,"m"],["Carne grelhada 100g",220,"a"],["Hambúrguer de lanchonete 1 un",480,"m"],["Batata frita porção média",350,"m"],["Batata cozida 100g",85,"v"],["Mandioca cozida 100g",125,"v"],["Cuscuz 1 fatia",120,"v"],["Tapioca 1 un",130,"a"],["Pizza 1 fatia",280,"m"],["Nuggets 5 un",240,"m"],["Salsicha 1 un",150,"m"],["Banana 1 un",90,"v"],["Maçã 1 un",70,"v"],["Pipoca sem manteiga 1 xícara",30,"v"],["Iogurte natural 170g",100,"v"],["Leite 200ml",120,"a"],["Queijo mussarela 1 fatia",70,"a"],["Bolacha água e sal 5 un",60,"a"],["Bolacha recheada 3 un",150,"m"],["Suco natural sem açúcar 200ml",90,"a"],["Refrigerante 350ml",140,"m"],["Chocolate 25g",130,"m"],["Sorvete 1 bola",130,"m"]];
+const K='meuprato_v1';
+let S=JSON.parse(localStorage.getItem(K)||'null')||{p:{},w:[],log:{},fav:[],cus:[],ag:{}};
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const hoje=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const foods=()=>[...S.cus.map(x=>[x[0],x[1],x[2]]),...BASE];
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function meta(){const p=S.p;if(!p.alt||!p.pes||!p.ida)return 0;const b=10*p.pes+6.25*p.alt-5*p.ida+(p.sex==='m'?5:-161);return Math.round(Math.max(b,b*1.2-400))}
+function opts(){const q=$('busca').value.toLowerCase().trim(),a=$('alim');a.textContent='';foods().filter(f=>f[0].toLowerCase().includes(q)).forEach(f=>{const o=new Option((f[2]==='v'?'🟢 ':f[2]==='a'?'🟡 ':'🔴 ')+f[0]+' · '+f[1]+' kcal',f[0]);a.add(o)});if(a.options.length)a.selectedIndex=0}
+function addItem(n){const f=foods().find(x=>x[0]===n);if(!f)return;const q=parseFloat($('qtd').value)||1,d=hoje();(S.log[d]=S.log[d]||[]).push({id:Date.now()+Math.random(),m:$('ref').value,n:f[0],k:Math.round(f[1]*q),c:f[2],q});save();render()}
+function render(){
+ const d=hoje(),L=S.log[d]||[],tot=L.reduce((a,x)=>a+x.k,0),m=meta(),cnt={v:0,a:0,m:0};L.forEach(x=>cnt[x.c]+=x.k);
+ $('kc').textContent=tot+' kcal';$('meta').textContent=m?'Meta do dia: '+m+' kcal':'Preencha o Perfil para ver sua meta';
+ const pc=m?Math.min(100,tot/m*100):0;$('bar').style.width=pc+'%';$('bar').style.background=pc>100||tot>m?'var(--r)':pc>85?'var(--y)':'var(--g)';
+ $('cores').textContent='🟢 '+cnt.v+'  🟡 '+cnt.a+'  🔴 '+cnt.m+' kcal';
+ let msg='Registre sua primeira refeição quando quiser 🌱';if(tot){msg=cnt.m/tot>.4?'Hoje teve bastante coisa pesada. Sem culpa: amanhã troque só um item por um 🟡.':m&&tot>m?'Passou um pouco da meta. Tudo bem, amanhã é outro dia.':'Bom registro! Continue no seu ritmo 💙'}$('msg').textContent=msg;
+ const l=$('lista');l.textContent='';if(!L.length)l.innerHTML='<p class="mu">Nada registrado ainda.</p>';
+ L.forEach(x=>{const r=document.createElement('div');r.className='it';r.innerHTML='<i class="dot '+x.c+'"></i>'+(x.p?'<img src="'+x.p+'" alt="Foto" style="width:64px;height:64px;object-fit:cover;border-radius:16px">':'')+'<span>'+esc(x.n)+(x.q!==1?' ×'+x.q:'')+'<br><small class="mu">'+esc(x.m)+' · '+x.k+' kcal</small></span>';const b=document.createElement('button');b.className='sm del';b.textContent='Apagar';b.setAttribute('aria-label','Apagar '+x.n);b.onclick=()=>{S.log[d]=S.log[d].filter(y=>y.id!==x.id);save();render()};r.append(b);l.append(r)});
+ const fv=$('favs');fv.textContent='';if(!S.fav.length)fv.innerHTML='<span class="mu">Na lista de alimentos, toque 2 vezes rápido em um item para guardar aqui. Segure o dedo no botão para remover.</span>';
+ S.fav.forEach(n=>{const b=document.createElement('button');b.textContent=n.split(' ')[0]+(n.split(' ')[1]&&n.split(' ')[1].length>2&&n.split(' ').length<3?' '+n.split(' ')[1]:'');b.title=n;b.onclick=()=>addItem(n);b.oncontextmenu=e=>{e.preventDefault();S.fav=S.fav.filter(y=>y!==n);save();render()};fv.append(b)});
+ $('ag').textContent=(S.ag[d]||0)+' copos';const pw=(S.w.length?S.w[S.w.length-1].v:S.p.pes)||0,mc=pw?Math.max(1,Math.round(pw*35/200)):0,ac=S.ag[d]||0;$('amt').textContent=mc?'Meta: cerca de '+(mc*0.2).toFixed(1).replace('.',',')+' L por dia ('+mc+' copos de 200 ml). Você bebeu '+ac+'. Confirme com seu médico.':'Preencha seu peso no Perfil para ver a meta de água.';$('abar').style.width=mc?Math.min(100,ac/mc*100)+'%':'0';
+ const p=S.p;['alt','pes','ida','sex'].forEach(k=>{if(p[k]!==undefined)$(k).value=p[k]});
+ const w=S.w,pe=w.length?w[w.length-1].v:p.pes;
+ if(p.alt&&pe){const i=pe/Math.pow(p.alt/100,2);$('imc').textContent=i.toFixed(1);$('imct').textContent=i<18.5?'Abaixo do peso':i<25?'Peso normal':i<30?'Sobrepeso':i<35?'Obesidade grau I':i<40?'Obesidade grau II':'Obesidade grau III'}else{$('imc').textContent='–';$('imct').textContent='Preencha altura e peso no Perfil'}
+ const g=$('gr');g.textContent='';g.classList.toggle('on',w.length>1);if(w.length>1){const vs=w.map(x=>x.v),mn=Math.min(...vs)-1,mx=Math.max(...vs)+1,pts=w.map((x,i)=>(10+i*280/(w.length-1))+','+(110-(x.v-mn)/(mx-mn)*100)).join(' ');g.innerHTML='<polyline fill="none" stroke="#3b78c4" stroke-width="3" points="'+pts+'"/>'}
+ const pl=$('pl');pl.textContent='';w.slice().reverse().slice(0,10).forEach(x=>{const r=document.createElement('div');r.className='it';r.innerHTML='<span>'+x.d.split('-').reverse().join('/')+' · <b>'+x.v+' kg</b></span>';const b=document.createElement('button');b.className='sm del';b.textContent='Apagar';b.onclick=()=>{S.w=S.w.filter(y=>y!==x);save();render()};r.append(b);pl.append(r)});
+ const h=$('hist');h.textContent='';Object.keys(S.log).filter(k=>k!==d&&S.log[k].length).sort().reverse().slice(0,7).forEach(k=>{const r=document.createElement('div');r.className='it';r.innerHTML='<span>'+k.split('-').reverse().join('/')+' · '+S.log[k].reduce((a,x)=>a+x.k,0)+' kcal</span>';h.append(r)});if(!h.children.length)h.innerHTML='<p class="mu">Ainda sem histórico.</p>';
+}
+$('busca').oninput=opts;
+$('add').onclick=()=>{const n=$('alim').value;if(n)addItem(n)};
+$('alim').ondblclick=()=>{const n=$('alim').value;if(n&&!S.fav.includes(n)){S.fav.push(n);save();render()}};
+$('alim').onchange=()=>{};
+$('cadd').onclick=()=>{const n=$('cn').value.trim(),k=parseInt($('ck').value);if(!n||isNaN(k))return;S.cus.unshift([n,k,$('cc').value]);save();$('cn').value='';$('ck').value='';opts()};
+$('a1').onclick=()=>{S.ag[hoje()]=(S.ag[hoje()]||0)+1;save();render()};
+$('a0').onclick=()=>{S.ag[hoje()]=Math.max(0,(S.ag[hoje()]||0)-1);save();render()};
+$('padd').onclick=()=>{const v=parseFloat($('pv').value);if(!v)return;S.w=S.w.filter(x=>x.d!==hoje());S.w.push({d:hoje(),v});S.w.sort((a,b)=>a.d<b.d?-1:1);$('pv').value='';save();render()};
+$('ps').onclick=()=>{S.p={alt:+$('alt').value,pes:+$('pes').value,ida:+$('ida').value,sex:$('sex').value};save();render();document.querySelector('[data-t="0"]').click()};
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',i==b.dataset.t))});
+let dp;addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;$('inst').hidden=false});$('inst').onclick=async()=>{if(!dp)return;dp.prompt();await dp.userChoice;dp=null;$('inst').hidden=true};
+
+let foto='';
+$('fo').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const s=Math.min(1,360/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);foto=c.toDataURL('image/jpeg',.6);URL.revokeObjectURL(u)};im.src=u};
+$('fadd').onclick=()=>{const k=parseInt($('fk').value);if(!foto&&!$('fn').value.trim())return;const d=hoje();(S.log[d]=S.log[d]||[]).push({id:Date.now()+Math.random(),m:$('ref').value,n:$('fn').value.trim()||'Refeição com foto',k:isNaN(k)?0:k,c:$('fc').value,q:1,p:foto});save();foto='';$('fo').value='';$('fn').value='';$('fk').value='';render()};
+opts();render();
+if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
