@@ -53,6 +53,13 @@ pre{white-space:pre-wrap;font:500 .85rem/1.5 system-ui;background:#f7fbff;border
   <details><summary>Não achou? Criar alimento</summary>
    <input id="cn" placeholder="Nome"><div class="g2"><input id="ck" type="number" placeholder="Calorias"><select id="cc"><option value="v">🟢 Leve</option><option value="a">🟡 Moderado</option><option value="m">🔴 Pesado</option></select></div>
    <button id="cadd">Salvar alimento</button></details></div>
+ <div class="card"><h2>🔎 Produto de mercado</h2>
+  <div class="g2"><button class="f" id="scan">📷 Ler código de barras</button><button id="scanx" hidden>Parar</button></div>
+  <video id="vid" playsinline muted style="width:100%;border-radius:22px;margin-top:10px" hidden></video>
+  <input id="pq" placeholder="Ou digite o nome ou o código (ex.: trakinas)" inputmode="search">
+  <button id="psb">Buscar</button>
+  <div id="pr"></div>
+  <p class="mu">Dados da base aberta Open Food Facts. Pode haver erros: confira o rótulo.</p></div>
  <div class="card"><h2>📸 Foto da refeição</h2>
   <input id="fo" type="file" accept="image/*" capture="environment">
   <input id="fn" placeholder="O que é? (ex.: prato de arroz e frango)">
@@ -84,11 +91,11 @@ const $=i=>document.getElementById(i);
 const BASE="Água 1 copo|0|v;Café sem açúcar 1 xícara|5|v;Café com leite e açúcar 1 xícara|90|a|diminuir o açúcar aos poucos;Chá sem açúcar 1 xícara|2|v;Leite integral 200ml|120|a;Leite desnatado 200ml|70|v;Iogurte natural 170g|100|v;Iogurte de fruta 170g|150|a|iogurte natural com um pedaço da mesma fruta;Vitamina de banana com leite 300ml|220|a;Suco natural sem açúcar 200ml|90|a;Suco de caixinha 200ml|110|m|suco natural ou água de coco;Água de coco 200ml|40|v;Refrigerante 350ml|140|m|água com gás e gotas de limão, que também faz bolinhas;Refrigerante zero 350ml|2|a;Pão francês 1 un|135|a|pão integral em fatia;Pão de forma 1 fatia|65|a;Pão integral 1 fatia|70|v;Pão com manteiga 1 un|190|a;Pão de queijo 1 un|90|a;Tapioca 1 un|130|a;Cuscuz 1 fatia|120|v;Bolo simples 1 fatia|250|m|uma fatia menor de bolo caseiro;Biscoito água e sal 5 un|60|a;Biscoito recheado 3 un|150|m|biscoito água e sal com doce de fruta;Torrada 2 un|60|a;Cereal matinal 1 xícara|120|a;Aveia 3 colheres|90|v;Granola 2 colheres|100|a;Ovo cozido 1 un|75|v;Ovo frito 1 un|110|a|ovo mexido com pouco óleo;Omelete 2 ovos|190|a;Queijo mussarela 1 fatia|70|a;Queijo minas 1 fatia|60|v;Requeijão 1 colher|50|a;Presunto 1 fatia|30|a;Arroz branco 4 colheres|130|a;Arroz integral 4 colheres|110|v;Macarrão cozido 1 prato|220|a;Macarrão instantâneo 1 pacote|380|m|macarrão comum com molho simples;Batata cozida 100g|85|v;Batata frita porção média|350|m|batata assada no forno, que fica crocante;Purê de batata 4 colheres|120|a;Mandioca cozida 100g|125|v;Farofa 2 colheres|110|a;Polenta 1 fatia|100|v;Feijão 1 concha|75|v;Lentilha 1 concha|70|v;Frango grelhado 100g|165|v;Frango empanado ou frito 100g|260|m|frango assado no forno com a mesma crocância;Nuggets 5 un|240|m|nuggets assados no forno;Carne bovina grelhada 100g|220|a;Carne moída 4 colheres|150|a;Bife acebolado 100g|200|a;Linguiça 1 un|250|m;Salsicha 1 un|150|m;Peixe grelhado 100g|140|v;Sardinha em lata 1 un|120|v;Atum em lata 1 colher|60|v;Hambúrguer de lanchonete 1 un|480|m|hambúrguer caseiro no prato;Pizza 1 fatia|280|m;Coxinha 1 un|280|m|coxinha assada;Pastel 1 un|290|m|pastel assado;Esfiha assada 1 un|180|a;Lasanha 1 porção|300|a;Strogonoff 4 colheres|190|a;Banana 1 un|90|v;Maçã 1 un|70|v;Laranja 1 un|60|v;Mamão 1 fatia|60|v;Melancia 1 fatia|50|v;Uva 1 cacho pequeno|70|v;Abacate 2 colheres|90|a;Tomate 3 fatias|15|v;Alface 1 prato|10|v;Cenoura cozida 3 colheres|25|v;Brócolis cozido 3 colheres|20|v;Salada de legumes 1 prato|50|v;Pipoca sem manteiga 1 xícara|30|v;Castanhas 5 un|60|a;Amendoim 1 punhado|160|a;Chocolate 25g|130|m;Bombom 1 un|50|m;Sorvete 1 bola|130|m;Brigadeiro 1 un|80|m;Gelatina 1 pote|60|v;Doce de leite 1 colher|60|m;Mel 1 colher|60|a;Açúcar 1 colher|20|m".split(";").map(s=>{const a=s.split("|");return [a[0],+a[1],a[2],a[3]||""]});
 const K='meuprato_v1';
 let S=JSON.parse(localStorage.getItem(K)||'null')||{p:{},w:[],log:{},fav:[],cus:[],ag:{}};
-const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){alert('A memória do app encheu. Apague fotos antigas para continuar salvando.')}};
 const hoje=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const foods=()=>[...S.cus.map(x=>[x[0],x[1],x[2]]),...BASE];
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function meta(){const p=S.p;if(!p.alt||!p.pes||!p.ida)return 0;const b=10*p.pes+6.25*p.alt-5*p.ida+(p.sex==='m'?5:-161);return Math.round(Math.max(b,b*1.2-400))}
+function meta(){const p=S.p;if(!p.alt||!p.pes||!p.ida)return 0;const b=10*p.pes+6.25*p.alt-5*p.ida+(p.sex==='m'?5:-161);return Math.round(Math.max(b,b*1.2-400,p.sex==='m'?1500:1200))}
 function opts(){const q=$('busca').value.toLowerCase().trim(),a=$('alim');a.textContent='';foods().filter(f=>f[0].toLowerCase().includes(q)).forEach(f=>{const o=new Option((f[2]==='v'?'🟢 ':f[2]==='a'?'🟡 ':'🔴 ')+f[0]+' · '+f[1]+' kcal',f[0]);a.add(o)});if(a.options.length)a.selectedIndex=0}
 function addItem(n){const f=foods().find(x=>x[0]===n);if(!f)return;const q=parseFloat($('qtd').value)||1,d=hoje();(S.log[d]=S.log[d]||[]).push({id:Date.now()+Math.random(),m:$('ref').value,n:f[0],k:Math.round(f[1]*q),c:f[2],q});$('tip').textContent=f[3]?'💡 Se um dia quiser (sem obrigação): '+f[3]+'.':'';save();render()}
 function render(){
@@ -149,6 +156,31 @@ const note=t=>{try{if(window.Notification&&Notification.permission==='granted')n
 setInterval(()=>{if(!S.rm.on)return;const n=new Date(),hm=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'),k=hoje()+hm;if(fired[k])return;
  if(S.rm.r.includes(hm)){fired[k]=1;note('Hora de comer algo e registrar 🍽️ Sem pressa, no seu ritmo.')}
  else{const m=n.getHours()*60+n.getMinutes();if(m>=480&&m<=1200&&(m-480)%S.rm.ag===0){fired[k]=1;note('Hora de um copinho de água 💧')}}},20000);
+
+/* ===== Produto de mercado (Open Food Facts) ===== */
+const cor=n=>n>=4?'m':n==3?'a':'v';
+async function off(u){const r=await fetch(u);if(!r.ok)throw 0;return r.json()}
+function prod(p){const n=p.nutriments||{},k100=n['energy-kcal_100g'];if(k100==null)return null;const s=+p.serving_quantity||0,nv=+p.nova_group||0;return{n:(p.product_name||'Produto')+(p.brands?' · '+p.brands.split(',')[0]:'')+(s?' ('+s+' g)':' (100 g)'),k:Math.round(s?k100*s/100:k100),c:nv?cor(nv):'a',nova:nv}}
+function mostrar(ps){const o=$('pr');o.textContent='';const L=ps.map(prod).filter(Boolean).slice(0,6);
+ if(!L.length){o.innerHTML='<p class="mu">Não achei. Tente outro nome ou crie o alimento em "Criar alimento".</p>';return}
+ L.forEach(x=>{const r=document.createElement('div');r.className='it';r.innerHTML='<i class="dot '+x.c+'"></i><span>'+esc(x.n)+'<br><small class="mu">'+x.k+' kcal'+(x.nova?' · NOVA '+x.nova:'')+'</small></span>';
+  const b=document.createElement('button');b.className='sm';b.textContent='Adicionar';
+  b.onclick=()=>{const d=hoje();(S.log[d]=S.log[d]||[]).push({id:Date.now()+Math.random(),m:$('ref').value,n:x.n,k:x.k,c:x.c,q:1});save();render()};
+  r.append(b);o.append(r)})}
+$('psb').onclick=async()=>{const q=$('pq').value.trim();if(!q)return;$('pr').innerHTML='<p class="mu">Buscando…</p>';
+ const F='fields=product_name,brands,nutriments,nova_group,serving_quantity';
+ try{if(/^\d{8,14}$/.test(q)){const j=await off('https://world.openfoodfacts.org/api/v2/product/'+q+'.json?'+F);mostrar(j.status===1?[j.product]:[])}
+ else{const j=await off('https://br.openfoodfacts.org/cgi/search.pl?search_simple=1&action=process&json=1&page_size=12&'+F+'&search_terms='+encodeURIComponent(q));mostrar(j.products||[])}}
+ catch(e){$('pr').innerHTML='<p class="mu">Sem conexão ou a base está ocupada. Tente de novo em instantes.</p>'}};
+let stream,tm;
+function parar(){clearInterval(tm);if(stream)stream.getTracks().forEach(t=>t.stop());$('vid').hidden=true;$('scanx').hidden=true}
+$('scanx').onclick=parar;
+$('scan').onclick=async()=>{if(!('BarcodeDetector'in window)){$('pr').innerHTML='<p class="mu">Este navegador não lê código de barras. Digite os números do código.</p>';return}
+ try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});const v=$('vid');v.srcObject=stream;v.hidden=false;$('scanx').hidden=false;await v.play();
+  const det=new BarcodeDetector({formats:['ean_13','ean_8','upc_a']});
+  tm=setInterval(async()=>{try{const c=await det.detect(v);if(c.length){$('pq').value=c[0].rawValue;parar();$('psb').click()}}catch(e){}},500)}
+ catch(e){$('pr').innerHTML='<p class="mu">Não consegui abrir a câmera. Digite o código.</p>'}};
+
 opts();render();
 if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
