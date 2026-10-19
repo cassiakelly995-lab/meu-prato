@@ -115,7 +115,6 @@ $('padd').onclick=()=>{const v=parseFloat($('pv').value);if(!v)return;S.w=S.w.fi
 $('ps').onclick=()=>{S.p={alt:+$('alt').value,pes:+$('pes').value,ida:+$('ida').value,sex:$('sex').value};save();render();document.querySelector('[data-t="0"]').click()};
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',i==b.dataset.t))});
 let dp;addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;$('inst').hidden=false});$('inst').onclick=async()=>{if(!dp)return;dp.prompt();await dp.userChoice;dp=null;$('inst').hidden=true};
-
 let foto='';
 $('fo').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const s=Math.min(1,360/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);foto=c.toDataURL('image/jpeg',.6);URL.revokeObjectURL(u)};im.src=u};
 $('fadd').onclick=()=>{const k=parseInt($('fk').value);if(!foto&&!$('fn').value.trim())return;const d=hoje();(S.log[d]=S.log[d]||[]).push({id:Date.now()+Math.random(),m:$('ref').value,n:$('fn').value.trim()||'Refeição com foto',k:isNaN(k)?0:k,c:$('fc').value,q:1,p:foto});save();foto='';$('fo').value='';$('fn').value='';$('fk').value='';render()};
